@@ -1,0 +1,4 @@
+FlxCaveGenerator demo (caveWallTiles.png, spaceman.png)
+  https://github.com/HaxeFlixel/flixel-demos/tree/dev/Platformers/FlxCaveGenerator
+  Cellular automata cave algorithm by Eddie Lee (flixel-addons FlxCaveGenerator).
+  License: MIT, see LICENSE-flixel-demos.txt in this folder.

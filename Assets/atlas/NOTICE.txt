@@ -1,0 +1,4 @@
+Test and demo assets for the atlas / animation / sprite features (shapes, walker, full47, glow, arrow, bricks, flag).
+They are generated procedurally for this project (no third-party art) and can be used freely.
+shapes.xml (Sparrow), shapes_tp.xml (TexturePacker XML) and shapes.json (TexturePacker JSON hash) describe the same sheet;
+walker.json is in Aseprite's array layout with frame tags and per-frame durations.

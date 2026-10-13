@@ -1,0 +1,3 @@
+BSPMapGen demo (tiles.png, player.png)
+  https://github.com/HaxeFlixel/flixel-demos/tree/dev/Other/BSPMapGen
+  License: MIT, see LICENSE-flixel-demos.txt in this folder.

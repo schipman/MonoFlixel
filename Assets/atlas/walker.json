@@ -1,0 +1,324 @@
+{
+ "frames": [
+  {
+   "filename": "walker 0",
+   "frame": {
+    "x": 1,
+    "y": 1,
+    "w": 10,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 3,
+    "w": 10,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 200
+  },
+  {
+   "filename": "walker 1",
+   "frame": {
+    "x": 12,
+    "y": 1,
+    "w": 10,
+    "h": 11
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 4,
+    "w": 10,
+    "h": 11
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 200
+  },
+  {
+   "filename": "walker 2",
+   "frame": {
+    "x": 23,
+    "y": 1,
+    "w": 10,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 3,
+    "w": 10,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 200
+  },
+  {
+   "filename": "walker 3",
+   "frame": {
+    "x": 34,
+    "y": 1,
+    "w": 10,
+    "h": 11
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 4,
+    "w": 10,
+    "h": 11
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 200
+  },
+  {
+   "filename": "walker 4",
+   "frame": {
+    "x": 45,
+    "y": 1,
+    "w": 10,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 3,
+    "w": 10,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 100
+  },
+  {
+   "filename": "walker 5",
+   "frame": {
+    "x": 1,
+    "y": 14,
+    "w": 10,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 3,
+    "w": 10,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 100
+  },
+  {
+   "filename": "walker 6",
+   "frame": {
+    "x": 12,
+    "y": 14,
+    "w": 10,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 3,
+    "w": 10,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 100
+  },
+  {
+   "filename": "walker 7",
+   "frame": {
+    "x": 23,
+    "y": 14,
+    "w": 10,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 3,
+    "w": 10,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 100
+  },
+  {
+   "filename": "walker 8",
+   "frame": {
+    "x": 34,
+    "y": 14,
+    "w": 10,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 3,
+    "w": 10,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 100
+  },
+  {
+   "filename": "walker 9",
+   "frame": {
+    "x": 45,
+    "y": 14,
+    "w": 10,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 3,
+    "w": 10,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 100
+  },
+  {
+   "filename": "walker 10",
+   "frame": {
+    "x": 1,
+    "y": 27,
+    "w": 10,
+    "h": 11
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 3,
+    "y": 4,
+    "w": 10,
+    "h": 11
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 120
+  },
+  {
+   "filename": "walker 11",
+   "frame": {
+    "x": 12,
+    "y": 27,
+    "w": 12,
+    "h": 14
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 2,
+    "y": 1,
+    "w": 12,
+    "h": 14
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 120
+  },
+  {
+   "filename": "walker 12",
+   "frame": {
+    "x": 25,
+    "y": 27,
+    "w": 12,
+    "h": 13
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 2,
+    "y": 2,
+    "w": 12,
+    "h": 13
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 16
+   },
+   "duration": 120
+  }
+ ],
+ "meta": {
+  "app": "gen_assets (aseprite layout)",
+  "image": "walker.png",
+  "size": {
+   "w": 64,
+   "h": 42
+  },
+  "frameTags": [
+   {
+    "name": "idle",
+    "from": 0,
+    "to": 3,
+    "direction": "forward"
+   },
+   {
+    "name": "walk",
+    "from": 4,
+    "to": 9,
+    "direction": "pingpong"
+   },
+   {
+    "name": "jump",
+    "from": 10,
+    "to": 12,
+    "direction": "forward"
+   },
+   {
+    "name": "run_back",
+    "from": 4,
+    "to": 9,
+    "direction": "reverse"
+   }
+  ]
+ }
+}

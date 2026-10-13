@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="shapes.png" width="128" height="89">
+  <sprite n="orb0001" x="1" y="1" w="10" h="10" oX="11" oY="11" oW="32" oH="32"/>
+  <sprite n="orb0002" x="12" y="1" w="16" h="16" oX="8" oY="8" oW="32" oH="32"/>
+  <sprite n="orb0003" x="29" y="1" w="22" h="22" oX="5" oY="5" oW="32" oH="32"/>
+  <sprite n="orb0004" x="52" y="1" w="26" h="26" oX="3" oY="3" oW="32" oH="32"/>
+  <sprite n="orb0005" x="79" y="1" w="26" h="26" oX="3" oY="3" oW="32" oH="32"/>
+  <sprite n="orb0006" x="1" y="28" w="22" h="22" oX="5" oY="5" oW="32" oH="32"/>
+  <sprite n="orb0007" x="24" y="28" w="16" h="16" oX="8" oY="8" oW="32" oH="32"/>
+  <sprite n="orb0008" x="41" y="28" w="10" h="10" oX="11" oY="11" oW="32" oH="32"/>
+  <sprite n="star0001" x="52" y="28" w="24" h="24" oX="4" oY="3" oW="32" oH="32"/>
+  <sprite n="star0002" x="77" y="28" w="26" h="26" oX="4" oY="3" oW="32" oH="32"/>
+  <sprite n="star0003" x="1" y="55" w="26" h="26" oX="4" oY="3" oW="32" oH="32"/>
+  <sprite n="star0004" x="28" y="55" w="24" h="24" oX="4" oY="5" oW="32" oH="32"/>
+  <sprite n="star0005" x="53" y="55" w="26" h="26" oX="2" oY="3" oW="32" oH="32"/>
+  <sprite n="star0006" x="80" y="55" w="26" h="26" oX="2" oY="3" oW="32" oH="32"/>
+  <sprite n="plate" x="107" y="55" w="20" h="12" oX="6" oY="10" oW="32" oH="32"/>
+  <sprite n="dot" x="1" y="82" w="6" h="6" oX="13" oY="13" oW="32" oH="32"/>
+</TextureAtlas>

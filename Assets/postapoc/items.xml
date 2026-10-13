@@ -1,0 +1,11 @@
+<Items>
+ <Item Type="Consumable" Name="Soda" Texture="PostApoc/items/item_soda"/>
+ <Item Type="Consumable" Name="Beans" Texture="PostApoc/items/item_can_beans" />
+ <Item Type="Consumable" Name="Veggies" Texture="PostApoc/items/item_can_veggies" />
+ <Item Type="Consumable" Name="Firewood" Texture="PostApoc/items/item_firewood" />
+ <Item Type="Consumable" Name="Canned Meat" Texture="PostApoc/items/item_cannedmeat" />
+ <Item Type="Consumable" Name="Candy Bar" Texture="PostApoc/items/item_candybar" />
+ <Item Type="Debug1" Name="Candy Bar" Texture="PostApoc/items/item_candybar"/>
+ <Item Type="Debug2" Name="Candy Bar" Texture="PostApoc/items/item_candybar"/>
+ <Item Type="Debug3" Name="Candy Bar" Texture="PostApoc/items/item_candybar"/>
+</Items>

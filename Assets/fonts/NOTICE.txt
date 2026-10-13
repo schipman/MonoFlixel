@@ -1,0 +1,3 @@
+nokia8.fnt / nokia8_xml.fnt are AngelCode BMFont descriptions of the Nokia Cellphone FC font atlas in Assets/flixel/nokia8.png
+(see Assets/flixel/NOTICE-ish files; the font and image come from the HaxeFlixel repository, MIT). They exist to test and demonstrate the
+BMFont loader, including kerning pairs, and are generated from Assets/flixel/nokia8.json.

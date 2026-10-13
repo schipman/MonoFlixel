@@ -1,0 +1,12 @@
+Mode (assets and the game design this port is based on)
+  Original game: "Mode" by Adam Atomic, from the HaxeFlixel demos
+  https://github.com/HaxeFlixel/flixel-demos/tree/dev/Platformers/Mode
+  Music: dannyB (http://dbsoundworks.com)
+  License: MIT, see LICENSE-flixel-demos.txt in this folder.
+
+The OGG sound files were converted to WAV so MonoGame can load them at runtime.
+
+Assets/flixel/
+  button.png and nokiafc22.ttf come from the HaxeFlixel engine repository
+  https://github.com/HaxeFlixel/flixel (MIT). nokia8.png / nokia8.json are the Nokia Cellphone FC
+  font (Flixel's default font) baked into a bitmap atlas.

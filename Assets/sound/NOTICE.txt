@@ -1,0 +1,3 @@
+OGG test sounds: the original Mode demo sounds and music (Platformers/Mode in HaxeFlixel's flixel-demos, MIT, see
+LICENSE-flixel-demos.txt). Music by dannyB (http://dbsoundworks.com). Used to test and demonstrate OGG (Vorbis) decoding.
+The same sounds as WAV (converted) are in Assets/mode/sounds.

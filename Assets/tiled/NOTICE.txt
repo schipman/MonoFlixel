@@ -1,0 +1,3 @@
+level.tmx and the images in this folder come from the HaxeFlixel "TiledEditor" demo (author: Samuel Batista)
+https://github.com/HaxeFlixel/flixel-demos/tree/dev/Editors/TiledEditor
+License: MIT, see LICENSE-flixel-demos.txt.
