@@ -390,3 +390,7 @@ Used by: the launcher subtitle, the Bitmap Text demo (R retypes, SPACE skips), t
 - `FlxPathfinder` and tilemap `FindPath` take an `FlxPathAlgorithm`: `AStar`, `Dijkstra`, `BreadthFirst`, `GreedyBestFirst`; `Reachable(...)` too.
 
 Demo: turn based. Move with arrows / WASD / numpad / Q E Z C (diagonals), SPACE or `.` waits, bump to attack (dice), walk onto potions (!) and the blue stairs. Rats and ogres follow a Dijkstra map, goblins use A*. Keys: F cycle FOV algorithm, `[` `]` radius, T light walls, M BSP or cave level, V show the distance map, X reveal map, R new level / restart, click to travel along the A* route, ESC back.
+
+## Building an installer
+
+`installer/build-installer.ps1 -Version 0.1.0` (needs the .NET 8 SDK and Inno Setup 6) publishes a self-contained win-x64 build, so the .NET runtime is bundled, and writes `dist/MonoFlixel-Setup-<version>.exe`.
