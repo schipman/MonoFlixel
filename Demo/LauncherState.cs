@@ -40,6 +40,7 @@ public class LauncherState : FlxState
         ("DROWN", "Dive, mine, craft", () => Drown.DrownMenuState.Open()),
         ("POST APOC", "Walk the road", () => PostApoc.PostApocMenuState.Open()),
         ("ROGUELIKE", "FOV, A*, Dijkstra", () => FlxG.SwitchState(new RoguelikeDemoState(), 640, 360, 2)),
+        ("SPECIAL FX", "Plasma, stars, waves", () => FlxG.SwitchState(new SpecialFxDemoState(), 640, 360, 2)),
     };
 
     const int Columns = 4, TileW = 124, TileH = 38, Gap = 8, RowGap = 6;

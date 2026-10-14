@@ -23,6 +23,8 @@ public static class FlxPostProcessLibrary
         new("GaussianBlur", "A smooth gaussian blur.", () => FlxGaussianBlur.Create(radius: 1.2f)),
         new("RadialBlur", "Zoom blur: smeared towards the middle of the screen.", () => Make("RadialBlur", "RadialBlur", SamplerState.LinearClamp, false, ("Strength", 0.14f), ("Inner", 0.12f), ("Center", new Vector2(0.5f, 0.5f)))),
         new("Wiggle", "Water wobble.", () => Make("Wiggle", "Wiggle", SamplerState.LinearClamp, false, ("Amplitude", 0.004f), ("Frequency", 20f), ("Speed", 3f))),
+        new("Refraction", "A scrolling displacement picture ripples the screen, like looking through moving water (from Drown).", () => Make("Refraction", "Refraction", SamplerState.LinearClamp, false,
+            ("Strength", 0.05f), ("Scale", 3f), ("Speed", 0.02f), ("DisplacementTex", FlxAssets.GetTexture("flixel/waterfall.jpg")))),
         new("ChromaticAberration", "Red and blue split apart towards the edges, like a cheap lens.", () => Make("ChromaticAberration", "ChromaticAberration", SamplerState.LinearClamp, false, ("Amount", 0.008f), ("Falloff", 1.5f))),
         new("Vignette", "Darkened corners.", () => Make("Vignette", ("Intensity", 0.7f), ("Radius", 0.45f), ("Softness", 0.55f), ("Roundness", 0.6f))),
         new("HeatVision", "A thermal camera: black, blue, red, yellow, white.", () => Make("HeatVision", "HeatVision", SamplerState.LinearClamp, false, ("Amount", 1f), ("Shimmer", 1f))),
@@ -59,6 +61,7 @@ public static class FlxPostProcessLibrary
                 case float f: p.Set(key, f); break;
                 case Vector2 v: p.Set(key, v); break;
                 case Vector4 v4: p.Set(key, v4); break;
+                case Texture2D t: p.Set(key, t); break;
             }
         }
         if (sampler != null) p.Sampler = sampler;

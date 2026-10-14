@@ -121,6 +121,7 @@ The engine's effects (`FlxPostProcessLibrary.All`, shaders in `Content/Shaders/`
 | Wiggle | water wobble |
 | ChromaticAberration | red and blue pushed apart towards the edges (`Amount`, `Falloff`) |
 | Vignette | soft dark corners (`Intensity`, `Radius`, `Softness`, `Roundness`) |
+| Refraction | a scrolling displacement picture ripples the screen (`Strength`, `Scale`, `Speed`; from Drown) |
 | HeatVision | thermal camera palette (black, blue, red, yellow, white) with a little heat haze |
 | NightVision | green image intensifier: gain, grain, flicker, round lens |
 | VHS | tape: color bleed and split, wobble, a rolling tracking band, tearing at the bottom, noise streaks |
@@ -291,6 +292,32 @@ FlxG.PostProcess.Set(FlxBloom.Create(threshold: 0.5f, intensity: 1.3f));
 ```
 Threshold is judged on the brightest colour channel and the glow keeps the hue of the highlight. Put it last in the chain (effects before it run at game-screen size). Multi-pass effects are possible because
 `FlxPostProcess` is no longer sealed: override `Draw(batch, source, dest)`, and restore the render target you were given (see FlxBloom). The BIG CAVE, MEGA MAN and BITMAP TEXT demos use it.
+
+## SpecialFX: demo-scene effects (launcher: SPECIAL FX)
+
+A port of the Flixel Power Tools `FlxSpecialFX` plugin by Richard Davey (Photon Storm). Each effect draws into a small software pixel canvas shown by a sprite; make one with a `FlxSpecialFX` factory, `Add()` the sprite its `Create` returns, and it animates itself.
+
+```csharp
+var plasma = FlxSpecialFX.Plasma();
+Add(plasma.Create(0, 0, 160, 90, scaleX: 2, scaleY: 2));
+
+var waves = FlxSpecialFX.SineWave();
+Add(waves.CreateFromTexture(tex, 20, 20, SineWaveType.VerticalSine, size: 16, length: 128, frequency: 4));
+```
+
+| Factory | Effect |
+|---|---|
+| `Plasma()` | sine-table plasma, optional chunky scale |
+| `Starfield()` | 2D parallax scroll or 3D fly-through |
+| `SineWave()` | waves a picture by column or row |
+| `Glitch()` | rows shifted sideways at random |
+| `CenterSlide()` | opens a picture from the middle (or closes it); `Reverse()`, `CompleteCallback` |
+| `FloodFill()` | fills a picture downwards by repeating its bottom rows |
+| `RainbowLine()` | cycling color bar with fades |
+| `WowCopper()` | copper bars |
+| `Blur()` | stamp sprites on a canvas that is blurred each frame (soft trails) |
+
+`FlxSpecialFX.StartFX()/StopFX()/IsActive<T>()/Remove()/Clear()` control them all (call `Clear()` when leaving a state). Differences from the Flash original: effects start running as soon as they are created (`Start(delay)` only sets how many frames to skip between redraws), sources are `Texture2D`/`FlxSprite` instead of `BitmapData`, and `RevealFX` is left out (it is an unfinished copy of `GlitchFX`).
 
 ## Sound (launcher: SOUND)
 `FlxG.Sound` (`FlxSoundFrontEnd`), `FlxSound` and `FlxSoundGroup` are ports of Flixel's. Sound files are **.wav** (PCM 8/16/24/32 bit or float, mono or stereo), **.mp3** (decoded into memory with NLayer, so about 10 MB per minute) and **.ogg** (Vorbis, decoded with NVorbis: short files
