@@ -55,6 +55,14 @@ public sealed class FxBitmap
         return b;
     }
 
+    public void Flip(bool x, bool y)
+    {
+        if (x) for (int r = 0; r < Height; r++) Array.Reverse(Data, r * Width, Width);
+        if (y) for (int r = 0; r < Height / 2; r++)
+                for (int c = 0; c < Width; c++)
+                    (Data[r * Width + c], Data[(Height - 1 - r) * Width + c]) = (Data[(Height - 1 - r) * Width + c], Data[r * Width + c]);
+    }
+
     public void Clear(Color color) => Array.Fill(Data, color);
 
     public void FillRect(Rectangle rect, Color color)
@@ -69,7 +77,10 @@ public sealed class FxBitmap
     }
 
     /// <summary>Draws part of another bitmap here (source-over; for opaque pixels that is a plain copy). Clipped on both sides.</summary>
-    public void CopyPixels(FxBitmap src, Rectangle srcRect, Point dst)
+    public void CopyPixels(FxBitmap src, Rectangle srcRect, Point dst) => CopyPixels(src, srcRect, dst, 1f);
+
+    /// <summary>Same, with the source faded by <paramref name="opacity"/> (0..1).</summary>
+    public void CopyPixels(FxBitmap src, Rectangle srcRect, Point dst, float opacity)
     {
         // clip the source rectangle to the source, then the destination to this canvas
         var s = Rectangle.Intersect(srcRect, src.Bounds);
@@ -87,6 +98,7 @@ public sealed class FxBitmap
             for (int x = 0; x < s.Width; x++, si++, di++)
             {
                 var p = src.Data[si];
+                if (opacity < 1f) p = new Color((int)(p.R * opacity), (int)(p.G * opacity), (int)(p.B * opacity), (int)(p.A * opacity));
                 if (p.A == 255) Data[di] = p;
                 else if (p.A != 0)
                 {
@@ -140,6 +152,15 @@ public static class FxColor
 
     /// <summary>0xAARRGGBB to a Color.</summary>
     public static Color Argb(uint v) => new((int)((v >> 16) & 255), (int)((v >> 8) & 255), (int)(v & 255), (int)((v >> 24) & 255));
+
+    /// <summary>A color from hue (0-360), saturation and brightness (0-1).</summary>
+    public static Color FromHsb(float hue, float saturation, float brightness)
+    {
+        float h = (hue % 360f) / 60f, f = h - MathF.Floor(h);
+        float v = brightness, p = v * (1 - saturation), q = v * (1 - saturation * f), t = v * (1 - saturation * (1 - f));
+        (float r, float g, float b) = (int)h switch { 0 => (v, t, p), 1 => (q, v, p), 2 => (p, v, t), 3 => (p, q, v), 4 => (t, p, v), _ => (v, p, q) };
+        return new Color(r, g, b);
+    }
 
     /// <summary>A hue wheel of <paramref name="count"/> colors (360 by default) at full saturation and brightness.</summary>
     public static Color[] HsvColorWheel(int count = 360, int alpha = 255)

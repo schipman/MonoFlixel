@@ -41,6 +41,8 @@ public class LauncherState : FlxState
         ("POST APOC", "Walk the road", () => PostApoc.PostApocMenuState.Open()),
         ("ROGUELIKE", "FOV, A*, Dijkstra", () => FlxG.SwitchState(new RoguelikeDemoState(), 640, 360, 2)),
         ("SPECIAL FX", "Plasma, stars, waves", () => FlxG.SwitchState(new SpecialFxDemoState(), 640, 360, 2)),
+        ("EFFECT SPRITE", "Sprite Effects", () => FlxG.SwitchState(new EffectSpriteDemoState(), 640, 480, 1)),
+        ("FSM", "State machine slime", () => FlxG.SwitchState(new FsmDemoState(), 320, 240, 2)),
     };
 
     const int Columns = 4, TileW = 124, TileH = 38, Gap = 8, RowGap = 6;

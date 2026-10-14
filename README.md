@@ -319,6 +319,45 @@ Add(waves.CreateFromTexture(tex, 20, 20, SineWaveType.VerticalSine, size: 16, le
 
 `FlxSpecialFX.StartFX()/StopFX()/IsActive<T>()/Remove()/Clear()` control them all (call `Clear()` when leaving a state). Differences from the Flash original: effects start running as soon as they are created (`Start(delay)` only sets how many frames to skip between redraws), sources are `Texture2D`/`FlxSprite` instead of `BitmapData`, and `RevealFX` is left out (it is an unfinished copy of `GlitchFX`).
 
+## FlxEffectSprite: chainable sprite effects (launcher: EFFECT SPRITE)
+
+A port of flixel-addons' `FlxEffectSprite` and its effects, with the HaxeFlixel demo (flags art from flixel-demos). Wrap any sprite (it does not have to be in the state) and list effects; each frame the target's picture goes through the active ones in order.
+
+```csharp
+var fx = new FlxEffectSprite(flag);
+fx.Effects.Add(new FlxWaveEffect(FlxWaveMode.All));
+fx.Effects.Add(new FlxOutlineEffect(FlxOutlineMode.Fast, Color.Red, 4));
+fx.Effects.Add(new FlxTrailEffect(fx, length: 10, alpha: 0.5f, framesDelay: 8));
+Add(fx);   // move / tween fx, not flag
+```
+
+Effects: `FlxRainbowEffect`, `FlxOutlineEffect` (Fast / Normal / PixelByPixel), `FlxWaveEffect` (All / Start / End, horizontal or vertical, interlace), `FlxGlitchEffect`, `FlxShakeEffect` (`Start()`), `FlxTrailEffect`. Write your own by implementing `IFlxEffect` (`Update`, and `Apply` which gets and returns an `FxBitmap`). Set `Active` on an effect to switch it, or `EffectsEnabled` on the sprite for all of them. The effects work on the CPU, so use them on small sprites. `FlxTween` gained a `Paused` flag for the demo.
+
+## FlxFSM: finite state machines (launcher: FSM)
+
+A port of flixel-addons' `FlxFSM` and the HaxeFlixel slime demo (art and sounds from flixel-demos; the music, "Happy New Year" by 8-BITek, is CC BY-NC-ND 3.0, see `Assets/fsm`). States are classes; a transition table says which state follows which, and when.
+
+```csharp
+class Idle : FlxFSMState<Slime>
+{
+    public override void Enter(Slime o, FlxFSM<Slime> fsm) => o.Animation.Play("standing");
+    public override void Update(float dt, Slime o, FlxFSM<Slime> fsm) { /* walk */ }
+    public override void Exit(Slime o) { }
+}
+
+var fsm = new FlxFSM<Slime>(this);
+fsm.Transitions.Add(typeof(Idle), typeof(Jump), o => FlxG.Keys.JustPressed(Keys.Up) && o.IsTouching(FlxDirection.Down));
+fsm.Transitions.Add(typeof(Jump), typeof(Idle), o => o.IsTouching(FlxDirection.Down));
+fsm.Transitions.Start(typeof(Idle));
+// in the owner's Update:
+fsm.Update(elapsed);
+```
+
+- `FlxFSMTransitionTable`: `Add`, `AddGlobal` (from any state), `Start`, `Replace`, `Remove`, `Has`. Transitions are checked in the order added; removals with `removeNow: false` wait until the owner has left the `From` state. Derive from `FlxFSMTransition<T>` and override `Evaluate` for conditions that need state.
+- States are pooled and reused: reset what you need in `Enter`. `fsm.Age` is how long the current state has been active.
+- `FlxFSMStack` runs several FSMs on one owner (movement, combat) and can `Lock` one by name, `LockRemaining`, or lock by `TypeFlags` (`FlxFSMStack<T>.GlobalLock` reaches every stack).
+- In the demo, picking up a powerup edits the table at run time (jump turns into super jump, and a ground pound state appears).
+
 ## Sound (launcher: SOUND)
 `FlxG.Sound` (`FlxSoundFrontEnd`), `FlxSound` and `FlxSoundGroup` are ports of Flixel's. Sound files are **.wav** (PCM 8/16/24/32 bit or float, mono or stereo), **.mp3** (decoded into memory with NLayer, so about 10 MB per minute) and **.ogg** (Vorbis, decoded with NVorbis: short files
 are decoded once, long ones such as songs are streamed while they play). Names are relative to `Assets` and the extension may be left out (`"sound/hit"`).

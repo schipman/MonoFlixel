@@ -66,6 +66,8 @@ public class FlxTween
     /// <summary>True while the tween runs (false once it finished, or after Cancel).</summary>
     public bool Active { get; private set; }
     public bool Finished { get; private set; }
+    /// <summary>While true the tween holds still (its time stops too).</summary>
+    public bool Paused;
 
     /// <summary>The object this tween changes, if any (used by CancelTweensOf).</summary>
     public virtual object? Target => null;
@@ -140,7 +142,7 @@ public class FlxTween
 
     internal void Update(float dt)
     {
-        if (!Active) return;
+        if (!Active || Paused) return;
 
         _time += dt;
         if (_time < _delay) return;
