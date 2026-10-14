@@ -79,8 +79,8 @@ public sealed class FxBitmap
     /// <summary>Draws part of another bitmap here (source-over; for opaque pixels that is a plain copy). Clipped on both sides.</summary>
     public void CopyPixels(FxBitmap src, Rectangle srcRect, Point dst) => CopyPixels(src, srcRect, dst, 1f);
 
-    /// <summary>Same, with the source faded by <paramref name="opacity"/> (0..1).</summary>
-    public void CopyPixels(FxBitmap src, Rectangle srcRect, Point dst, float opacity)
+    /// <summary>Same, with the source faded by <paramref name="opacity"/> (0..1). With replace the pixels (alpha too) overwrite what is there, like Flash's copyPixels, instead of being laid over it.</summary>
+    public void CopyPixels(FxBitmap src, Rectangle srcRect, Point dst, float opacity, bool replace = false)
     {
         // clip the source rectangle to the source, then the destination to this canvas
         var s = Rectangle.Intersect(srcRect, src.Bounds);
@@ -99,7 +99,7 @@ public sealed class FxBitmap
             {
                 var p = src.Data[si];
                 if (opacity < 1f) p = new Color((int)(p.R * opacity), (int)(p.G * opacity), (int)(p.B * opacity), (int)(p.A * opacity));
-                if (p.A == 255) Data[di] = p;
+                if (replace || p.A == 255) Data[di] = p;
                 else if (p.A != 0)
                 {
                     var d = Data[di];
@@ -370,7 +370,7 @@ public sealed class FloodFillFX : FlxSpecialFXBase
         {
             // a smaller picture sits at the bottom
             Image = new FxBitmap(width, height, ClearColor);
-            Image.CopyPixels(source, source.Bounds, new Point(0, height - source.Height));
+            Image.CopyPixels(source, source.Bounds, new Point(0, height - source.Height), 1f, replace: true);
         }
         else Image = source;
         _offset = Math.Max(1, pixels);
@@ -382,7 +382,7 @@ public sealed class FloodFillFX : FlxSpecialFXBase
     public override void Step(float elapsed)
     {
         if (Complete || Skip()) return;
-        for (int y = 0; y < _dropY; y += _offset) Canvas.CopyPixels(Image!, _dropRect, new Point(0, y));
+        for (int y = 0; y < _dropY; y += _offset) Canvas.CopyPixels(Image!, _dropRect, new Point(0, y), 1f, replace: true);   // a straight copy: laying soft edge pixels over themselves again and again would turn them solid black
         _dropY -= _offset;
         _dropRect.Y -= _offset;
         if (_dropY <= 0) Complete = true;
