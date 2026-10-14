@@ -43,9 +43,10 @@ public class LauncherState : FlxState
         ("SPECIAL FX", "Plasma, stars, waves", () => FlxG.SwitchState(new SpecialFxDemoState(), 640, 360, 2)),
         ("EFFECT SPRITE", "Sprite Effects", () => FlxG.SwitchState(new EffectSpriteDemoState(), 640, 480, 1)),
         ("FSM", "State machine slime", () => FlxG.SwitchState(new FsmDemoState(), 320, 240, 2)),
+        ("WEAPON", "Bullets and guns", () => FlxG.SwitchState(new WeaponDemoState(), 480, 270, 2)),
     };
 
-    const int Columns = 4, TileW = 124, TileH = 38, Gap = 8, RowGap = 6;
+    const int Columns = 4, TileW = 124, TileH = 34, Gap = 8, RowGap = 4;
 
     readonly List<LauncherTile> _tiles = new();
     readonly List<FlxText> _letters = new();
@@ -156,7 +157,7 @@ public class LauncherState : FlxState
     void BuildTiles()
     {
         float totalW = Columns * TileW + (Columns - 1) * Gap;
-        float startX = (Width - totalW) / 2f, startY = 98;
+        float startX = (Width - totalW) / 2f, startY = 90;
 
         for (int i = 0; i < Demos.Length; i++)
         {

@@ -359,6 +359,26 @@ fsm.Update(elapsed);
 - `FlxFSMStack` runs several FSMs on one owner (movement, combat) and can `Lock` one by name, `LockRemaining`, or lock by `TypeFlags` (`FlxFSMStack<T>.GlobalLock` reaches every stack).
 - In the demo, picking up a powerup edits the table at run time (jump turns into super jump, and a ground pound state appears).
 
+## FlxWeapon: bullets and guns (launcher: WEAPON)
+
+A port of Flixel Power Tools' `FlxWeapon` and its `Bullet` (`FlxBullet` here). A weapon owns a pool of bullets and fires them from an object or a place: in a direction, at the mouse, at a position, or at a target. The bullets are an ordinary group, so you add it to a state and collide or overlap it with whatever they should hit.
+
+```csharp
+var gun = new FlxWeapon("gun", player) { BulletSpeed = 300, FireRate = 100, BulletLifeSpan = 1500, RandomAngle = 3, CenterOnParent = true };
+gun.MakePixelBullet(40, 2, 2, Color.Yellow);       // or MakeImageBullet(...), MakeAnimatedBullet(...)
+Add(gun.Group);
+// in Update:
+if (FlxG.Mouse.Pressed) gun.FireFromAngle(angleToMouse);
+FlxG.Overlap(gun.Group, enemies, (bullet, enemy) => { bullet.Kill(); enemy.Kill(); });
+```
+
+- Fire with `Fire()` (the direction from `SetBulletDirection`, or the way a sprite parent faces), `FireAtMouse()`, `FireAtPosition(x, y)`, `FireAtTarget(obj)`, `FireFromAngle(degrees)` or `FireFromParentAngle()`. Each returns `false` when nothing was shot: the weapon is still reloading (`FireRate`) or every bullet is in the air.
+- Spread and variety: `RandomAngle`, `RandomSpeed`, `RandomPosition`, `RandomLifeSpan`. `BulletElasticity` makes them bounce, `SetBulletGravity(x, y)` pulls them down, `SetBulletAcceleration(x, y, maxX, maxY)` makes them start slow and speed up (rockets).
+- `MakeImageBullet(..., rotate: true)` bakes the picture at 16 angles, so a bullet that spins (`AngularVelocity`) or points where it flies looks right. Each bullet is a sprite: tint it, give it a Drag, and so on.
+- `Bounds` (the screen by default) kills bullets that leave it; `BulletLifeSpan` kills them after some milliseconds. Times are in milliseconds, as in the original, and run on `FlxG.RealTime`. `OnPreFire`, `OnFire`, `OnPostFire` (and the matching `...Sound` fields) hook into a shot.
+- New in this port: `CenterOnParent` starts the bullet at the middle of the parent instead of its top-left corner. The magazine fields that the original declared but never used are left out.
+- The demo has five weapons (machine gun, spinner, shotgun, rocket, grenade) built from the one class: WASD move, aim and fire with the mouse, 1-5 change weapon.
+
 ## Sound (launcher: SOUND)
 `FlxG.Sound` (`FlxSoundFrontEnd`), `FlxSound` and `FlxSoundGroup` are ports of Flixel's. Sound files are **.wav** (PCM 8/16/24/32 bit or float, mono or stereo), **.mp3** (decoded into memory with NLayer, so about 10 MB per minute) and **.ogg** (Vorbis, decoded with NVorbis: short files
 are decoded once, long ones such as songs are streamed while they play). Names are relative to `Assets` and the extension may be left out (`"sound/hit"`).
