@@ -4,7 +4,8 @@ A C# / MonoGame port of the core of HaxeFlixel, plus three demos you can launch 
 a port of **Mode** (the HaxeFlixel platformer demo), a **Mega Man** tilemap/animation test, and the
 **Tiled editor** demo (a level made in Tiled and loaded from a `.tmx` file).
 
-<img width="2558" height="1440" alt="mPxCDAjhQu" src="https://github.com/user-attachments/assets/e1f832b4-b8c7-4e9c-a8e2-89fe04fe4e11" />
+<img width="2558" height="1440" alt="Rlu2g8sirw" src="https://github.com/user-attachments/assets/65264543-08f9-4788-84a7-a2d8803c33f3" />
+
 <img width="2560" height="1440" alt="Vw3qTSzFKS" src="https://github.com/user-attachments/assets/999b713b-cfbf-47c3-8c29-1ef5cb482d3d" />
 <img width="2555" height="1440" alt="QEE3mXYXTY" src="https://github.com/user-attachments/assets/f1da691b-c275-4200-bd19-ef89b0ed3826" />
 
