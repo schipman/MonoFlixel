@@ -81,6 +81,9 @@ public sealed class FlxSound : FlxBasic
 
     public string Name => _clip?.Name ?? "";
 
+    /// <summary>The sound's audio data (for tools that analyse it, like FlxFlectrum). Null until a sound is loaded.</summary>
+    public FlxAudioClip? Clip => _clip;
+
     /// <summary>True while the sound is playing (a paused sound is not playing).</summary>
     public bool Playing => _playing && !_paused;
 

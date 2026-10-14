@@ -44,6 +44,9 @@ public class LauncherState : FlxState
         ("EFFECT SPRITE", "Sprite Effects", () => FlxG.SwitchState(new EffectSpriteDemoState(), 640, 480, 1)),
         ("FSM", "State machine slime", () => FlxG.SwitchState(new FsmDemoState(), 320, 240, 2)),
         ("WEAPON", "Bullets and guns", () => FlxG.SwitchState(new WeaponDemoState(), 480, 270, 2)),
+        ("DEMOSCENE", "Scrollers, spectrum", () => FlxG.SwitchState(new ScrollerDemoState(), 480, 270, 2)),
+        ("MOUSE SPRITES", "Drag, throw, buttons", () => FlxG.SwitchState(new DragDemoState(), 480, 270, 2)),
+        ("CONTROL", "Walk, jump, thrust", () => FlxG.SwitchState(new ControlDemoState(), 480, 270, 2)),
     };
 
     const int Columns = 4, TileW = 124, TileH = 34, Gap = 8, RowGap = 4;

@@ -64,6 +64,7 @@ of through FlxActions. The cursor image is drawn at 1x game pixels (= the origin
 * `Assets/flixel/` : stock button image and Nokia Cellphone FC font from the HaxeFlixel repo (MIT);
   `nokia8.png/.json` is that font baked into a bitmap atlas.
 * `Assets/tiled/` : level and images from the HaxeFlixel TiledEditor demo (MIT, see `NOTICE.txt` there).
+* `NOTICE-flixel-power-tools.txt` : the Simplified BSD license of the Flixel Power Tools by Richard Davey (Photon Storm), which the ports of `FlxSpecialFX`, `FlxWeapon`, `FlxVelocity`, `FlxScrollZone`, `FlxScrollingText`, `FlxFlectrum`, `FlxGridOverlay`, `FlxDisplay`, `FlxCollision`, `FlxExtendedSprite`, `FlxButtonPlus`, `FlxControl` and `FlxScreenGrab` are based on.
 * `Assets/autotiles*.png`, `Assets/megaman_run.png` : the assets you supplied.
 * The collision/separation code follows Flixel's algorithm (MIT). Keep its copyright notice if you copy more of it.
 
@@ -378,6 +379,64 @@ FlxG.Overlap(gun.Group, enemies, (bullet, enemy) => { bullet.Kill(); enemy.Kill(
 - `Bounds` (the screen by default) kills bullets that leave it; `BulletLifeSpan` kills them after some milliseconds. Times are in milliseconds, as in the original, and run on `FlxG.RealTime`. `OnPreFire`, `OnFire`, `OnPostFire` (and the matching `...Sound` fields) hook into a shot.
 - New in this port: `CenterOnParent` starts the bullet at the middle of the parent instead of its top-left corner. The magazine fields that the original declared but never used are left out.
 - The demo has five weapons (machine gun, spinner, shotgun, rocket, grenade) built from the one class: WASD move, aim and fire with the mouse, 1-5 change weapon.
+
+## The Flixel Power Tools (launcher: DEMOSCENE, MOUSE SPRITES, CONTROL, WEAPON, SPECIAL FX)
+
+The Flixel Power Tools by Richard Davey (Photon Storm) were a set of plugins for Flixel 2.5 that a lot of Flash games were built on. Most of them are ported here (their Simplified BSD license is in `NOTICE-flixel-power-tools.txt`). The Flash plugins were static classes that Flixel updated for you; here the ones that need updating are objects you `Add` to a state. Already in the engine before: `FlxSpecialFX`, `FlxWeapon` (above), `FlxVelocity`, `FlxBar`, `FlxBitmapFont`, `FlxGradient`, `FlxMath`, `FlxColor`.
+
+| Tool | What it does |
+|---|---|
+| `FlxScrollZone` | scrolls parts of a sprite's picture endlessly: parallax bands in one picture |
+| `FlxScrollingText` | a demo scene text scroller made from a bitmap font (works with proportional fonts) |
+| `FlxFlectrum` | an equalizer meter that shows the music (an FFT of the audio, `FlxSpectrumAnalyzer`) |
+| `FlxGridOverlay` | checkerboard and stripe pictures, or a grid over a sprite |
+| `FlxExtendedSprite` + `FlxMouseControl` | sprites you can click, drag, throw, snap, hold with a spring, give gravity |
+| `FlxCollision` | pixel perfect collision (rotated, scaled, mirrored, animated sprites), point tests, camera walls |
+| `FlxControl` | keyboard control presets: top-down, platformer jump, spaceship thrust, fire rate |
+| `FlxButtonPlus` | a button drawn from gradients, with over / out callbacks |
+| `FlxDisplay` | `Space`, `ScreenWrap`, `AlphaMask` |
+| `FlxScreenGrab` | screenshots, optionally saved as PNG, with a hotkey |
+
+```csharp
+// parallax bands inside one picture, a ticker, a spectrum meter
+var scroller = new FlxScrollZone(sky);
+scroller.AddZone(new Rectangle(0, 0, 320, 40), -0.5f, 0);          // pixels per frame
+scroller.AddZone(new Rectangle(0, 40, 320, 40), -2f, 0);
+Add(sky); Add(scroller);
+var ticker = new FlxScrollingText(FlxBitmapFont.Default, new Rectangle(0, 220, 320, 12), pixels: 2, text: "HELLO FLIXEL    ");
+Add(ticker.Sprite); Add(ticker);
+Add(new FlxFlectrum(10, 100, FlxG.Sound.Music!, columns: 16, columnSize: 8, columnSpacing: 2, rows: 24, rowSize: 3, rowSpacing: 1));
+
+// mouse sprites (an FlxMouseControl must be in the state)
+Add(new FlxMouseControl());
+var box = new FlxExtendedSprite(40, 40, "box.png");
+box.EnableMouseDrag(boundsRect: arena);   box.EnableMouseThrow(14, 14);   box.SetGravity(0, 400);
+box.EnableMouseSnap(16, 16, onDrag: false, onRelease: true);                 // or EnableMouseSpring(), EnableMouseClicks(...)
+
+// pixel perfect: do the pictures touch, not just the boxes?
+if (FlxCollision.PixelPerfectCheck(player, rock)) player.Hurt(1);
+Add(FlxCollision.CreateCameraWall(FlxG.Camera, FlxCameraWall.Inside, 8));
+
+// keyboard control: add the FlxControl before the sprites it moves
+var control = new FlxControl();  Add(control);  Add(player);
+var c = control.Create(player, FlxControlMovement.Accelerates, FlxControlStopping.Decelerates);
+c.SetWASDControl();  c.SetMovementSpeed(500, 500, 130, 130, 400, 400);  c.SetGravity(0, 600);
+c.SetJumpButton(Keys.Space, FlxKeyMode.JustDown, 250, FlxDirection.Floor, 250, jumpFromFall: 120);
+c.SetThrust(Keys.Up, 280, Keys.Down, 140);   c.SetFireButton(Keys.Space, FlxKeyMode.Pressed, 140, () => gun.FireFromParentAngle());
+
+FlxScreenGrab.DefineHotKey(Keys.F12, saveToFile: true);                      // saves to Pictures\MonoFlixel
+```
+
+Differences from the Flash versions:
+- **Objects instead of plugins.** `FlxScrollZone`, `FlxScrollingText`, `FlxMouseControl` and `FlxControl` are `FlxBasic`s you add to the state (`FlxControl` before the sprites it moves, so its jump reads what they touched in the last frame; `FlxExtendedSprite`'s mouse features need an `FlxMouseControl`).
+- **`FlxScrollZone` / `FlxScrollingText`** work on a private copy of the picture (shared textures stay untouched). A zone that is not cleared (`clearRegion`) keeps what was drawn before, so give pictures with see-through parts `clearRegion: true`. The draw matrix of a zone is left out.
+- **`FlxFlectrum`** needed the Neoart Flectrum library; this one analyses the audio itself (`FlxSound.Clip`, the audio at the playing position), so it works with any sound, in any direction, as `Meter` or `Peaks`. No bitmap meters, no background beat.
+- **`FlxExtendedSprite`** calls the drag start / stop callbacks (the original never did), holds a dragged sprite still while the mouse has it (gravity no longer drags it away from the pointer), and the click and spring work in world coordinates. Throw factors are per frame, as in the original.
+- **`FlxCollision`** uses `FlxSprite.GetDrawTransform()`, which says where each texture pixel is on screen (the same numbers `Draw` uses), so it needs no pre-rotated bitmaps. The bottom camera wall is placed from the camera's Y (the original forgot it).
+- **`FlxScreenGrab`** takes the picture at the end of the frame (`FlxScreenGrab.Grab()`, then `Screenshot` or the `Grabbed` event) and saves straight to a folder instead of a Save As window.
+- **`FlxDisplay.Space`** now really adds up sizes with `spaceFromBounds`. `screenCenter` is `FlxSprite.ScreenCenter`.
+- **Also added:** `FlxColor.ColorWheel / Complement / Analogous / SplitComplement / Triadic / Random / Info`, `FlxMath.AngleLimit`, `FxBitmap.BlendOver` (ordinary alpha blending for the software canvases), `FlxGame.GameArea`.
+- **Not ported:** `FlxDelay` (use `FlxTimer`), `FlxFlod` (a wrapper around the Neoart Flod tracker music player; playing MOD files would be a project of its own), `FlxKongregate` (the Kongregate API), and the unfinished or Flash-only `FlxLinkedGroup`, `FlxExplode`, `FlxCoreUtils`, `PNGEncoder`.
 
 ## Sound (launcher: SOUND)
 `FlxG.Sound` (`FlxSoundFrontEnd`), `FlxSound` and `FlxSoundGroup` are ports of Flixel's. Sound files are **.wav** (PCM 8/16/24/32 bit or float, mono or stereo), **.mp3** (decoded into memory with NLayer, so about 10 MB per minute) and **.ogg** (Vorbis, decoded with NVorbis: short files

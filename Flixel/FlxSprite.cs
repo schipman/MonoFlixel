@@ -234,7 +234,29 @@ public class FlxSprite : FlxObject
     public override void Draw()
     {
         if (Pixels == null || Frames == null || Alpha <= 0) return;
-        var cam = FlxG.Camera;
+
+        var t = GetDrawTransform(FlxG.Camera);
+        if (!t.Valid) return;
+
+        var effects = SpriteEffects.None;
+        if (t.FlipX) effects |= SpriteEffects.FlipHorizontally;
+        if (t.FlipY) effects |= SpriteEffects.FlipVertically;
+
+        var c = Tint;
+        c.A = (byte)(c.A * MathHelper.Clamp(Alpha, 0f, 1f));
+
+        FlxG.SpriteBatch.Draw(Pixels, t.Anchor, t.Source, c, t.Rotation, t.OriginInRect, Scale, effects, 0f);
+    }
+
+    /// <summary>
+    /// How the sprite is drawn on a camera right now: where its pivot is, how it is turned and scaled, and which part of the texture it
+    /// shows. <see cref="Draw"/> uses it, and it is how code (FlxCollision, picking) finds out which texture pixel is under a point of the
+    /// screen. Positions are in the camera's view pixels. Not <see cref="FlxDrawTransform.Valid"/> when nothing is drawn.
+    /// </summary>
+    public FlxDrawTransform GetDrawTransform(FlxCamera? cam = null)
+    {
+        cam ??= FlxG.Camera;
+        if (Pixels == null || Frames == null || Frames.Count == 0) return default;
 
         float px = MathF.Round(X - Offset.X - cam.ScrollX * ScrollFactor.X);
         float py = MathF.Round(Y - Offset.Y - cam.ScrollY * ScrollFactor.Y);
@@ -268,7 +290,7 @@ public class FlxSprite : FlxObject
             if (fy) clip.Y = fh - clip.Y - clip.Height;
 
             var shown = Rectangle.Intersect(area, clip);
-            if (shown.Width <= 0 || shown.Height <= 0) return;
+            if (shown.Width <= 0 || shown.Height <= 0) return default;
 
             // the matching part of the picture (counted from the opposite edge when mirrored)
             src.X += fx ? area.Right - shown.Right : shown.X - area.X;
@@ -278,14 +300,62 @@ public class FlxSprite : FlxObject
             area = shown;
         }
 
-        var effects = SpriteEffects.None;
-        if (fx) effects |= SpriteEffects.FlipHorizontally;
-        if (fy) effects |= SpriteEffects.FlipVertically;
+        return new FlxDrawTransform(new Vector2(px, py) + Origin, Origin - new Vector2(area.X, area.Y), Scale, rotation, src, fx, fy);
+    }
+}
 
-        var c = Tint;
-        c.A = (byte)(c.A * MathHelper.Clamp(Alpha, 0f, 1f));
+/// <summary>
+/// Where and how a sprite is drawn (see <see cref="FlxSprite.GetDrawTransform"/>). The picture is a rectangle of <see cref="Source"/>
+/// pixels. Its point <see cref="OriginInRect"/> sits at <see cref="Anchor"/> on the screen, scaled by <see cref="Scale"/> and turned
+/// clockwise by <see cref="Rotation"/>; for a mirrored sprite the pixels inside the rectangle are mirrored.
+/// </summary>
+public readonly struct FlxDrawTransform
+{
+    public readonly Vector2 Anchor, OriginInRect, Scale;
+    public readonly float Rotation;
+    public readonly Rectangle Source;
+    public readonly bool FlipX, FlipY;
 
-        FlxG.SpriteBatch.Draw(Pixels, new Vector2(px, py) + Origin, src, c,
-            rotation, Origin - new Vector2(area.X, area.Y), Scale, effects, 0f);
+    public FlxDrawTransform(Vector2 anchor, Vector2 originInRect, Vector2 scale, float rotation, Rectangle source, bool flipX, bool flipY)
+    {
+        Anchor = anchor; OriginInRect = originInRect; Scale = scale; Rotation = rotation; Source = source; FlipX = flipX; FlipY = flipY;
+    }
+
+    public bool Valid => Source.Width > 0 && Source.Height > 0;
+
+    /// <summary>A point of the drawn rectangle (0..Source.Width, 0..Source.Height) to the screen.</summary>
+    public Vector2 ToScreen(Vector2 rectPoint)
+    {
+        var v = (rectPoint - OriginInRect) * Scale;
+        float cos = MathF.Cos(Rotation), sin = MathF.Sin(Rotation);
+        return Anchor + new Vector2(v.X * cos - v.Y * sin, v.X * sin + v.Y * cos);
+    }
+
+    /// <summary>The texture pixel drawn at a screen point. False when the point is outside the picture.</summary>
+    public bool TryFromScreen(Vector2 screenPoint, out Point texel)
+    {
+        texel = default;
+        if (!Valid || Scale.X == 0 || Scale.Y == 0) return false;
+
+        var d = screenPoint - Anchor;
+        float cos = MathF.Cos(Rotation), sin = MathF.Sin(Rotation);
+        var v = new Vector2(d.X * cos + d.Y * sin, -d.X * sin + d.Y * cos) / Scale + OriginInRect;
+        if (v.X < 0 || v.Y < 0 || v.X >= Source.Width || v.Y >= Source.Height) return false;
+
+        int x = (int)v.X, y = (int)v.Y;
+        if (FlipX) x = Source.Width - 1 - x;
+        if (FlipY) y = Source.Height - 1 - y;
+        texel = new Point(Source.X + x, Source.Y + y);
+        return true;
+    }
+
+    /// <summary>The smallest screen rectangle that holds the drawn picture, as (min, max) corners.</summary>
+    public (Vector2 Min, Vector2 Max) ScreenBounds()
+    {
+        var a = ToScreen(Vector2.Zero);
+        var b = ToScreen(new Vector2(Source.Width, 0));
+        var c = ToScreen(new Vector2(Source.Width, Source.Height));
+        var d = ToScreen(new Vector2(0, Source.Height));
+        return (Vector2.Min(Vector2.Min(a, b), Vector2.Min(c, d)), Vector2.Max(Vector2.Max(a, b), Vector2.Max(c, d)));
     }
 }

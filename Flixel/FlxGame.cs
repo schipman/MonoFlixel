@@ -30,6 +30,9 @@ public class FlxGame : Game
     FlxState? _pending;
     (int w, int h, int zoom)? _pendingResolution;
     Rectangle _dest;
+
+    /// <summary>Where the game is drawn inside the window, in window pixels (the window without the black bars).</summary>
+    public Rectangle GameArea => _dest;
     readonly RenderTarget2D[] _ping = new RenderTarget2D[2], _pingWindow = new RenderTarget2D[2];
     RenderTarget2D? _overlay;
 

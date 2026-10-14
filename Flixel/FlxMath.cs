@@ -70,6 +70,9 @@ public static class FlxMath
     /// <summary>Adds to a value but never above max (or below min).</summary>
     public static int MaxAdd(int value, int amount, int max, int min = 0) => Bound(value + amount, min, max);
 
+    /// <summary>Keeps an angle between a minimum and a maximum (a plain clamp, as in the original).</summary>
+    public static float AngleLimit(float angle, float min, float max) => Bound(angle, min, max);
+
     public static float Distance(float x1, float y1, float x2, float y2)
     {
         float dx = x1 - x2, dy = y1 - y2;
@@ -260,6 +263,58 @@ public static class FlxColor
 
     /// <summary>Same color with a different alpha (0-1).</summary>
     public static Color WithAlpha(Color c, float alpha) => new(c.R, c.G, c.B, (int)(MathHelper.Clamp(alpha, 0, 1) * 255));
+
+    // ------------------------------------------------------------ color harmonies (from Flixel Power Tools' FlxColor)
+
+    /// <summary>The 360 fully saturated colors around the color wheel, one per degree of hue.</summary>
+    public static Color[] ColorWheel(int alpha = 255)
+    {
+        var colors = new Color[360];
+        for (int h = 0; h < 360; h++) colors[h] = FromHsb(h, 1f, 1f, alpha / 255f);
+        return colors;
+    }
+
+    /// <summary>The color opposite on the wheel (full saturation and brightness, like the original).</summary>
+    public static Color Complement(Color color) => FromHsb(ToHsb(color).Hue + 180f, 1f, 1f);
+
+    /// <summary>Two neighbours of a color on the wheel, <paramref name="threshold"/> degrees to either side.</summary>
+    public static (Color Color, Color Warmer, Color Colder) Analogous(Color color, int threshold = 30)
+    {
+        if (threshold is < 0 or > 359) throw new ArgumentOutOfRangeException(nameof(threshold));
+        float hue = ToHsb(color).Hue;
+        return (color, FromHsb(hue - threshold, 1f, 1f), FromHsb(hue + threshold, 1f, 1f));
+    }
+
+    /// <summary>The two colors beside the opposite one (<paramref name="threshold"/> degrees either side of it), keeping saturation and brightness.</summary>
+    public static (Color Color, Color Warmer, Color Colder) SplitComplement(Color color, int threshold = 30)
+    {
+        if (threshold is <= 0 or >= 359) throw new ArgumentOutOfRangeException(nameof(threshold));
+        var (hue, saturation, brightness) = ToHsb(color);
+        float opposite = hue + 180f;
+        return (color, FromHsb(opposite - threshold, saturation, brightness), FromHsb(opposite + threshold, saturation, brightness));
+    }
+
+    /// <summary>Three colors 120 degrees apart (the other two are fully saturated).</summary>
+    public static (Color Color, Color Second, Color Third) Triadic(Color color)
+    {
+        float hue = ToHsb(color).Hue;
+        return (color, FromHsb(hue + 120f, 1f, 1f), FromHsb(hue + 240f, 1f, 1f));
+    }
+
+    /// <summary>A random opaque color with each channel between min and max (0-255).</summary>
+    public static Color Random(int min = 0, int max = 255, int alpha = 255)
+    {
+        min = Math.Clamp(min, 0, 255);
+        max = Math.Clamp(max, min, 255);
+        return new Color(FlxG.Random.Int(min, max), FlxG.Random.Int(min, max), FlxG.Random.Int(min, max), alpha);
+    }
+
+    /// <summary>The color as text: hex, the four channels and hue / saturation / brightness.</summary>
+    public static string Info(Color c)
+    {
+        var (h, s, b) = ToHsb(c);
+        return $"{ToHex(c, true)}\nAlpha: {c.A} Red: {c.R} Green: {c.G} Blue: {c.B}\nHue: {h:0} Saturation: {s:0.00} Brightness: {b:0.00}";
+    }
 }
 
 public sealed class FlxRandom

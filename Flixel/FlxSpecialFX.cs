@@ -32,6 +32,38 @@ public sealed class FxBitmap
 
     public Rectangle Bounds => new(0, 0, Width, Height);
 
+    /// <summary>
+    /// Lays part of another bitmap over this one with ordinary (straight) alpha: both hold plain colors, like a texture does.
+    /// (<see cref="CopyPixels(FxBitmap, Rectangle, Point)"/> expects premultiplied colors.) Clipped on both sides.
+    /// </summary>
+    public void BlendOver(FxBitmap src, Rectangle srcRect, Point dst)
+    {
+        var s = Rectangle.Intersect(srcRect, src.Bounds);
+        dst.X += s.X - srcRect.X;
+        dst.Y += s.Y - srcRect.Y;
+        if (dst.X < 0) { s.X -= dst.X; s.Width += dst.X; dst.X = 0; }
+        if (dst.Y < 0) { s.Y -= dst.Y; s.Height += dst.Y; dst.Y = 0; }
+        s.Width = Math.Min(s.Width, Width - dst.X);
+        s.Height = Math.Min(s.Height, Height - dst.Y);
+        if (s.Width <= 0 || s.Height <= 0) return;
+
+        for (int y = 0; y < s.Height; y++)
+        {
+            int si = (s.Y + y) * src.Width + s.X, di = (dst.Y + y) * Width + dst.X;
+            for (int x = 0; x < s.Width; x++, si++, di++)
+            {
+                var p = src.Data[si];
+                if (p.A == 0) continue;
+                var d = Data[di];
+                if (p.A == 255 || d.A == 0) { Data[di] = p; continue; }
+
+                float a = p.A / 255f, da = d.A / 255f, outA = a + da * (1 - a);
+                float k = da * (1 - a);
+                Data[di] = new Color((int)((p.R * a + d.R * k) / outA), (int)((p.G * a + d.G * k) / outA), (int)((p.B * a + d.B * k) / outA), (int)(outA * 255));
+            }
+        }
+    }
+
     public static FxBitmap FromTexture(Texture2D tex, Rectangle? region = null)
     {
         var r = region ?? new Rectangle(0, 0, tex.Width, tex.Height);
