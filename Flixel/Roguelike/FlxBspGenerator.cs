@@ -15,6 +15,9 @@ public sealed class FlxBspMap
     /// <summary>The rooms, in the order they were made.</summary>
     public readonly List<Rectangle> Rooms = new();
 
+    /// <summary>The floor tiles that join two rooms in a wall (only made by <see cref="FlxFeatureDungeonGenerator"/>).</summary>
+    public readonly List<Point> Doorways = new();
+
     /// <summary>A grid map of the dungeon (walls block sight and walking).</summary>
     public FlxGridMap ToGridMap() => FlxGridMap.FromWalls(Data, Width, Height);
 
@@ -46,7 +49,10 @@ public static class FlxBspGenerator
     /// <param name="maxLeaf">A piece longer than this is always cut.</param>
     /// <param name="minRoom">The smallest room side.</param>
     /// <param name="seed">The same seed gives the same dungeon (null: a new one each time).</param>
-    public static FlxBspMap Generate(int width, int height, int minLeaf = 10, int maxLeaf = 24, int minRoom = 4, int? seed = null)
+    /// <param name="minFill">The least share of its piece (0 to 1) that a room fills across and down. The default 0 lets rooms be small and far apart; a higher number packs the rooms
+    /// closer together, with shorter corridors between them.</param>
+    /// <param name="maxFill">The most share of its piece a room may fill (1: all but the border cell).</param>
+    public static FlxBspMap Generate(int width, int height, int minLeaf = 10, int maxLeaf = 24, int minRoom = 4, int? seed = null, float minFill = 0f, float maxFill = 1f)
     {
         var rnd = seed.HasValue ? new Random(seed.Value) : new Random();
         var map = new FlxBspMap { Width = width, Height = height, Data = new int[width * height] };
@@ -72,7 +78,7 @@ public static class FlxBspGenerator
             }
         }
 
-        MakeRooms(root, map, minRoom, rnd);
+        MakeRooms(root, map, minRoom, rnd, minFill, maxFill);
         return map;
     }
 
@@ -100,12 +106,12 @@ public static class FlxBspGenerator
         return true;
     }
 
-    static void MakeRooms(Leaf leaf, FlxBspMap map, int minRoom, Random rnd)
+    static void MakeRooms(Leaf leaf, FlxBspMap map, int minRoom, Random rnd, float minFill, float maxFill)
     {
         if (leaf.A != null && leaf.B != null)
         {
-            MakeRooms(leaf.A, map, minRoom, rnd);
-            MakeRooms(leaf.B, map, minRoom, rnd);
+            MakeRooms(leaf.A, map, minRoom, rnd, minFill, maxFill);
+            MakeRooms(leaf.B, map, minRoom, rnd, minFill, maxFill);
 
             // join the two halves: a room of each, by an L shaped corridor
             var ra = AnyRoom(leaf.A, rnd);
@@ -116,8 +122,9 @@ public static class FlxBspGenerator
 
         // a room in the leaf, a cell away from its edges
         var b = leaf.Bounds;
-        int maxW = Math.Max(minRoom, b.Width - 2), maxH = Math.Max(minRoom, b.Height - 2);
-        int w = rnd.Next(Math.Min(minRoom, maxW), maxW + 1), h = rnd.Next(Math.Min(minRoom, maxH), maxH + 1);
+        int maxW = Math.Max(minRoom, Math.Min(b.Width - 2, (int)MathF.Round(b.Width * maxFill))), maxH = Math.Max(minRoom, Math.Min(b.Height - 2, (int)MathF.Round(b.Height * maxFill)));
+        int loW = Math.Min(maxW, Math.Max(minRoom, (int)MathF.Round(b.Width * minFill))), loH = Math.Min(maxH, Math.Max(minRoom, (int)MathF.Round(b.Height * minFill)));
+        int w = rnd.Next(Math.Min(loW, maxW), maxW + 1), h = rnd.Next(Math.Min(loH, maxH), maxH + 1);
         w = Math.Min(w, b.Width - 1); h = Math.Min(h, b.Height - 1);
         int x = b.X + rnd.Next(0, Math.Max(1, b.Width - w)), y = b.Y + rnd.Next(0, Math.Max(1, b.Height - h));
 

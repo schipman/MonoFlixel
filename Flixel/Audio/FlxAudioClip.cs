@@ -74,6 +74,43 @@ public sealed class FlxAudioClip
         return ext switch { ".wav" => FromWav(bytes, name), ".ogg" => FromOgg(bytes, name), _ => FromMp3(bytes, name) };
     }
 
+    /// <summary>True once <see cref="Normalize"/> has been applied (so it is only done once to a clip that many sounds share).</summary>
+    public bool Normalized { get; private set; }
+
+    /// <summary>
+    /// Changes the loudness of the whole clip, for recordings that were made far too quiet: the gain is chosen so that the average level (RMS, 0 to 1)
+    /// becomes <paramref name="targetRms"/>, but never so much that the loudest sample passes <paramref name="maxPeak"/> (0 to 1). Only for clips held in
+    /// memory (WAV, MP3, short OGG); does nothing to a streamed clip. Done once; the clip stays changed for everything that plays it.
+    /// Returns the gain that was used.
+    /// </summary>
+    public float Normalize(float targetRms = 0.08f, float maxPeak = 0.9f)
+    {
+        if (_pcm == null || Normalized) return 1f;
+        Normalized = true;
+
+        double sum = 0;
+        int peak = 1, samples = _pcm.Length / 2;
+        for (int i = 0; i < samples; i++)
+        {
+            int v = (short)(_pcm[i * 2] | (_pcm[i * 2 + 1] << 8));
+            sum += (double)v * v;
+            peak = Math.Max(peak, Math.Abs(v));
+        }
+        double rms = Math.Sqrt(sum / Math.Max(1, samples)) / 32768.0;
+        if (rms <= 0) return 1f;
+
+        float gain = (float)Math.Min(targetRms / rms, maxPeak * 32768.0 / peak);
+        if (Math.Abs(gain - 1f) < 0.01f) return 1f;
+        for (int i = 0; i < samples; i++)
+        {
+            int v = (short)(_pcm[i * 2] | (_pcm[i * 2 + 1] << 8));
+            v = Math.Clamp((int)MathF.Round(v * gain), -32768, 32767);
+            _pcm[i * 2] = (byte)(v & 0xFF);
+            _pcm[i * 2 + 1] = (byte)((v >> 8) & 0xFF);
+        }
+        return gain;
+    }
+
     public FlxAudioReader OpenReader() => _pcm != null ? new PcmReader(this, _pcm) : new OggReader(this, _oggFile!);
 
     // ------------------------------------------------------------------ WAV
