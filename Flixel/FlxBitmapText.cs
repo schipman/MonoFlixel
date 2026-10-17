@@ -301,16 +301,16 @@ public class FlxBitmapText : FlxSprite
                 case FlxTextBorderStyle.Outline:
                     for (int dy = -1; dy <= 1; dy++)
                         for (int dx = -1; dx <= 1; dx++)
-                            if (dx != 0 || dy != 0) DrawGlyphs(px + dx * BorderSize, py + dy * BorderSize, bc);
+                            if (dx != 0 || dy != 0) DrawGlyphs(px, py, bc, dx * BorderSize, dy * BorderSize);
                     break;
                 case FlxTextBorderStyle.OutlineFast:
-                    DrawGlyphs(px - BorderSize, py, bc);
-                    DrawGlyphs(px + BorderSize, py, bc);
-                    DrawGlyphs(px, py - BorderSize, bc);
-                    DrawGlyphs(px, py + BorderSize, bc);
+                    DrawGlyphs(px, py, bc, -BorderSize, 0);
+                    DrawGlyphs(px, py, bc, BorderSize, 0);
+                    DrawGlyphs(px, py, bc, 0, -BorderSize);
+                    DrawGlyphs(px, py, bc, 0, BorderSize);
                     break;
                 case FlxTextBorderStyle.Shadow:
-                    DrawGlyphs(px + BorderSize, py + BorderSize, bc);
+                    DrawGlyphs(px, py, bc, BorderSize, BorderSize);
                     break;
             }
         }
@@ -319,7 +319,12 @@ public class FlxBitmapText : FlxSprite
         DrawGlyphs(px, py, c);
     }
 
-    void DrawGlyphs(float px, float py, Color color)
+    /// <summary>
+    /// Draws every glyph at the text position, then shifted by (<paramref name="offX"/>, <paramref name="offY"/>), the offset of a border or shadow pass. With
+    /// <see cref="SnapToPixels"/> the glyph is snapped first and the offset (itself a whole number of pixels) added after, so a shadow or outline keeps exactly the same
+    /// distance from the glyph wherever the text is; snapping the shifted position instead made it jump by a pixel as the text moved over fractions of a pixel.
+    /// </summary>
+    void DrawGlyphs(float px, float py, Color color, float offX = 0, float offY = 0)
     {
         var batch = FlxG.SpriteBatch;
         float rot = MathHelper.ToRadians(Angle);
@@ -333,7 +338,8 @@ public class FlxBitmapText : FlxSprite
             if (rotated) { float rx = lx * cos - ly * sin; ly = lx * sin + ly * cos; lx = rx; }
 
             var pos = new Vector2(px + cx + lx, py + cy + ly);
-            if (!rotated && SnapToPixels) pos = new Vector2(MathF.Round(pos.X), MathF.Round(pos.Y));
+            if (!rotated && SnapToPixels) pos = new Vector2(MathF.Round(pos.X) + MathF.Round(offX), MathF.Round(pos.Y) + MathF.Round(offY));
+            else pos += new Vector2(offX, offY);
 
             batch.Draw(_font.Pages[q.Page], pos, q.Source, color, rot, Vector2.Zero, _textScale, SpriteEffects.None, 0f);
         }
